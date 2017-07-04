@@ -37,9 +37,9 @@ public class ExcelFileServiceTest extends BaseTestCase {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        List itemList = parser.fileParser(stream);
-        String collectionName = "flyer_".concat(Util.getTodayString());
-        excelFileService.saveDate(collectionName,itemList);
-        System.out.println("save successfully");
+//        List itemList = parser.fileParser(stream);
+//        String collectionName = "flyer_".concat(Util.getTodayString());
+//        excelFileService.saveDate(stream);
+//        System.out.println("save successfully");
     }
 }

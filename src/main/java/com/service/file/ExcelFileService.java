@@ -1,5 +1,8 @@
 package com.service.file;
 
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -7,5 +10,5 @@ import java.util.List;
  */
 public interface ExcelFileService {
 
-    void saveDate(String collectionName,List data) ;
+    void saveDate(MultipartFile multipartFile) ;
 }

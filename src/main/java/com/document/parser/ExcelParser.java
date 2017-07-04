@@ -6,8 +6,8 @@ import com.document.to.CellInfoTo;
 import com.util.Util;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 import java.util.*;
@@ -38,70 +38,62 @@ public class ExcelParser {
         public static final ExcelParser INSTANCE = new ExcelParser();
     }
 
-    private HSSFSheet getSheet(InputStream stream){
+    private Sheet getSheet(MultipartFile multipartFile){
         String SHEET_KEY = this.getSheetKey();
         if(cacheMap.containsKey(SHEET_KEY)){
             return (HSSFSheet) cacheMap.get(SHEET_KEY);
         }
 
+
         POIFSFileSystem fs;
-        HSSFWorkbook wb =null;
-        try{
+        Workbook wb =null;
+        try(
+            InputStream stream = multipartFile.getInputStream()
+        ) {
             fs = new POIFSFileSystem(stream);
-            wb = new HSSFWorkbook(fs);
+            wb = WorkbookFactory.create(fs);
         } catch (IOException e) {
             e.printStackTrace();
         }
         if(wb ==null){
             return null;
         }
-        HSSFSheet hssfSheet = wb.getSheetAt(0);
+        Sheet hssfSheet = wb.getSheetAt(0);
 
         cacheMap.put(SHEET_KEY,hssfSheet);
         return hssfSheet;
     }
 
-    public List fileParser(InputStream stream) {
-       try {
-           HSSFSheet sheet = this.getSheet(stream);
-           Integer rowNum = sheet.getLastRowNum();
-           List<Integer> numList = new ArrayList<>();
-           int index = 1;
-           while (index <= rowNum) {
-               numList.add(index);
-               index++;
-           }
-           return numList.parallelStream().map(rowIndex -> sheet.getRow(rowIndex))
-                   .map(hssfRow -> {
-                       List<CellInfoTo> columnList = this.getColumnInfo(stream);
-                       Map<String, String> itemValue = new HashMap<>();
-                       columnList.stream().forEach(cellInfoTo -> {
-                           String field = cellInfoTo.getCellField();
-                           HSSFCell cell = hssfRow.getCell(cellInfoTo.getCellNo());
-                           itemValue.put(field, getCellValdue(cell));
-                       });
-                       return itemValue;
-                   }).collect(toList());
-       }finally {
-           if(stream!=null){
-               try {
-                   stream.close();
-               } catch (IOException e) {
-                   e.printStackTrace();
-               }
-           }
+    public List fileParser(MultipartFile multipartFile) {
+       Sheet sheet = this.getSheet(multipartFile);
+       Integer rowNum = sheet.getLastRowNum();
+       List<Integer> numList = new ArrayList<>();
+       int index = 1;
+       while (index <= rowNum) {
+           numList.add(index);
+           index++;
        }
-
+       return numList.parallelStream().map(rowIndex -> sheet.getRow(rowIndex))
+               .map(hssfRow -> {
+                   List<CellInfoTo> columnList = this.getColumnInfo(multipartFile);
+                   Map<String, Object> itemValue = new HashMap<>();
+                   columnList.stream().forEach(cellInfoTo -> {
+                       String field = cellInfoTo.getCellField();
+                       Cell cell = hssfRow.getCell(cellInfoTo.getCellNo());
+                       itemValue.put(field, getCellValdue(cell));
+                   });
+                   return itemValue;
+               }).collect(toList());
     }
 
 
-    private List<CellInfoTo> getColumnInfo(InputStream stream){
+    private List<CellInfoTo> getColumnInfo(MultipartFile multipartFile){
         if(cacheMap.containsKey(COLUMN_KEY)){
             return (List<CellInfoTo>) cacheMap.get(COLUMN_KEY);
         }
         List<CellInfoTo> cellList = new ArrayList<>();
-        HSSFSheet sheet = this.getSheet(stream);
-        HSSFRow header = sheet.getRow(0);
+        Sheet sheet = this.getSheet(multipartFile);
+        Row header = sheet.getRow(0);
         Iterator<Cell> iterator = header.cellIterator();
         while(iterator.hasNext()) {
             Cell  cell= iterator.next();
@@ -114,7 +106,7 @@ public class ExcelParser {
         return cellList;
     }
 
-    private String getCellValdue(HSSFCell hssfCell) {
+    private Object getCellValdue(Cell hssfCell) {
         String cellValue = "";
         CellType cellType = hssfCell.getCellTypeEnum();
         switch (cellType){
@@ -126,7 +118,7 @@ public class ExcelParser {
 //                if (isDate) {
 //                    return new SimpleDateFormat("YYYY-MM-DD").format(value);
 //                }
-                return String.valueOf(hssfCell.getNumericCellValue());
+                return hssfCell.getNumericCellValue();
             case BOOLEAN:
                 return String.valueOf(hssfCell.getBooleanCellValue());
             default:
@@ -147,29 +139,4 @@ public class ExcelParser {
         PropertiesLoader loader = new PropertiesLoader();
         return loader.getProperty(cellName);
     }
-
-    public static void main(String[] args) {
-        FileInputStream stream = null;
-        try {
-             String path = "/Users/liujiaping/Downloads/零售6.05.xls";
-             stream = new FileInputStream(path);
-            List itemList = getInstance().fileParser(stream);
-            itemList.parallelStream().forEach(
-                    item-> System.out.println(item)
-            );
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }  finally {
-            try {
-                if(stream !=null) {
-                    stream.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-
-
 }
