@@ -45,23 +45,21 @@ public class ExcelParser {
         }
 
 
-        POIFSFileSystem fs;
-        Workbook wb =null;
-        try(
-                InputStream stream = multipartFile.getInputStream()
+        try( InputStream stream = multipartFile.getInputStream();
+             POIFSFileSystem fs = new POIFSFileSystem(stream);
+             Workbook wb = WorkbookFactory.create(fs)
         ) {
-            fs = new POIFSFileSystem(stream);
-            wb = WorkbookFactory.create(fs);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        if(wb ==null){
-            return null;
-        }
-        Sheet hssfSheet = wb.getSheetAt(0);
+            if(wb ==null){
+                return null;
+            }
+            Sheet hssfSheet = wb.getSheetAt(0);
+            cacheMap.put(SHEET_KEY,hssfSheet);
+            return hssfSheet;
+        }catch (IOException e) {
 
-        cacheMap.put(SHEET_KEY,hssfSheet);
-        return hssfSheet;
+        }
+
+        return null;
     }
 
     public List fileParser(MultipartFile multipartFile) {
