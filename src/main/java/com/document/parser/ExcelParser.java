@@ -48,7 +48,7 @@ public class ExcelParser {
         POIFSFileSystem fs;
         Workbook wb =null;
         try(
-            InputStream stream = multipartFile.getInputStream()
+                InputStream stream = multipartFile.getInputStream()
         ) {
             fs = new POIFSFileSystem(stream);
             wb = WorkbookFactory.create(fs);
@@ -65,25 +65,25 @@ public class ExcelParser {
     }
 
     public List fileParser(MultipartFile multipartFile) {
-       Sheet sheet = this.getSheet(multipartFile);
-       Integer rowNum = sheet.getLastRowNum();
-       List<Integer> numList = new ArrayList<>();
-       int index = 1;
-       while (index <= rowNum) {
-           numList.add(index);
-           index++;
-       }
-       return numList.parallelStream().map(rowIndex -> sheet.getRow(rowIndex))
-               .map(hssfRow -> {
-                   List<CellInfoTo> columnList = this.getColumnInfo(multipartFile);
-                   Map<String, Object> itemValue = new HashMap<>();
-                   columnList.stream().forEach(cellInfoTo -> {
-                       String field = cellInfoTo.getCellField();
-                       Cell cell = hssfRow.getCell(cellInfoTo.getCellNo());
-                       itemValue.put(field, getCellValdue(cell));
-                   });
-                   return itemValue;
-               }).collect(toList());
+        Sheet sheet = this.getSheet(multipartFile);
+        Integer rowNum = sheet.getLastRowNum();
+        List<Integer> numList = new ArrayList<>();
+        int index = 1;
+        while (index <= rowNum) {
+            numList.add(index);
+            index++;
+        }
+        return numList.parallelStream().map(rowIndex -> sheet.getRow(rowIndex))
+                .map(hssfRow -> {
+                    List<CellInfoTo> columnList = this.getColumnInfo(multipartFile);
+                    Map<String, Object> itemValue = new HashMap<>();
+                    columnList.stream().forEach(cellInfoTo -> {
+                        String field = cellInfoTo.getCellField();
+                        Cell cell = hssfRow.getCell(cellInfoTo.getCellNo());
+                        itemValue.put(field, getCellValdue(cell));
+                    });
+                    return itemValue;
+                }).collect(toList());
     }
 
 
