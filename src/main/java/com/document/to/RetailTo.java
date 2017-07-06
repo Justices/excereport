@@ -13,7 +13,7 @@ public class RetailTo implements Serializable {
 
 
     private static final long serialVersionUID = 8706625513655465323L;
-    private String id ;
+    private String _id ;
 
     private String shopType;
 

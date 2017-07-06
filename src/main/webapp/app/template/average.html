@@ -1,1 +1,42 @@
     <div>This is average page </div>
+
+    <table>
+        <tr>
+            <td>店仓性质</td>
+            <td>年份</td>
+            <td>季节</td>
+            <td>款号</td>
+            <td>条码.色号</td>
+            <td>店仓编号</td>
+            <td>数量</td>
+            <td>标准金额</td>
+            <td>成交金额</td>
+            <td>预估成本金额</td>
+            <td>标准价</td>
+        </tr>
+        <tr ng-repeat=" x in sourceData">
+              <td>{{x.shopType}}</td>
+              <td>{{ x.year }}</td>
+              <td>{{ x.season }}</td>
+              <td>{{ x.productNo }}</td>
+              <td>{{ x.itemNo }}</td>
+              <td>{{ x.shopNo }}</td>
+              <td>{{ x.count }}</td>
+              <td>{{ x.standardAmount }}</td>
+              <td>{{ x.dealAmount }}</td>
+              <td>{{ x.expectAmount }}</td>
+              <td>{{ x.standardPrice }}</td>
+        </tr>
+    </table>
+
+    店仓性质=shopType
+    年份=year
+    季节=season
+    款号=productNo
+    条码.色号=itemNo
+    店仓编号=shopNo
+    数量=count
+    标准金额=standardAmount
+    成交金额=dealAmount
+    预估成本金额=expectAmount
+    标准价=standardPrice

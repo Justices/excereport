@@ -1,9 +1,8 @@
-package service.fileService;
+package com.service.file;
 
 import com.BaseTestCase;
 import com.document.parser.ExcelParser;
 import com.service.file.ExcelFileService;
-import com.util.Util;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.List;
 
 /**
  * Created by liujiaping on 2017/7/2.

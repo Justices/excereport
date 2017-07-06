@@ -30,7 +30,12 @@ public class BaseDao<T>{
         mongoTemplate.insert(documents,collection);
     }
 
-    public boolean isCollectionExists(String collecitonName) {
-        return mongoTemplate.collectionExists(collecitonName);
+    public boolean isCollectionExists(String collectionName) {
+        return mongoTemplate.collectionExists(collectionName);
     }
+
+    public <T> List<T> findDataByCollectionName(Query query, Class<T> type, String collectionName){
+        return mongoTemplate.find(query,type,collectionName);
+    }
+
 }
