@@ -4,6 +4,7 @@ import com.document.to.RetailTo;
 import com.mongodb.BaseDao;
 import com.service.report.ReportService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +21,7 @@ public class ReportServiceImpl implements ReportService {
 
     @Override
     public List<RetailTo> getSourceData(String collectionName) {
-        List<RetailTo>  retailToList=  baseDao.findDataByCollectionName(new Query(),RetailTo.class,collectionName);
+        List<RetailTo>  retailToList=  baseDao.findDataByCollectionName(new Query().limit(100),RetailTo.class,collectionName);
         return retailToList;
 
     }
