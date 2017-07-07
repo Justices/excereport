@@ -9,4 +9,6 @@ import java.util.List;
 public interface ReportService {
 
     List<RetailTo> getSourceData(String collectionName);
+
+    List getShopAmount(String collectionName);
 }

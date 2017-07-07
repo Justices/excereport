@@ -17,4 +17,10 @@ public class ReportServiceTest extends BaseTestCase{
         String collectionName = "flyer_20170704";
         reportService.getSourceData(collectionName);
     }
+
+    @Test
+    public void testGetShopAmount() {
+        String collectionName = "flyer_20170703";
+        reportService.getShopAmount(collectionName);
+    }
 }

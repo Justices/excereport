@@ -38,4 +38,7 @@ public class BaseDao<T>{
         return mongoTemplate.find(query,type,collectionName);
     }
 
+    public DBCollection getCollection(String collectionName) {
+       return mongoTemplate.getCollection(collectionName);
+    }
 }
