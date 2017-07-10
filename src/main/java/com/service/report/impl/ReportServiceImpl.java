@@ -4,17 +4,15 @@ import com.document.to.RetailTo;
 import com.mongodb.*;
 import com.service.report.ReportService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.aggregation.Aggregation;
-import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
-import org.springframework.data.mongodb.core.aggregation.AggregationOperationContext;
-import org.springframework.data.mongodb.core.aggregation.Field;
-import org.springframework.data.mongodb.core.query.BasicQuery;
-import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.aggregation.*;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
+import static org.springframework.data.mongodb.core.query.Criteria.where;
 
 /**
  * Created by liujiaping on 2017/7/6.
@@ -34,12 +32,13 @@ public class ReportServiceImpl implements ReportService {
 
     /**
      *  db.flyer_20170703.group({
-     *      key:{"shopNo":true,"productNo":true},
-     *      cond:{},initial:{"totalStandardAmount":0,totalDealAmount:0},
+     *      key:{"shopNo":true,"productNo":true}, //group by condition
+     *      cond:{}, //query condition
+     *      initial:{"totalStandardAmount":0,totalDealAmount:0},
      *      reduce: function(doc,prev) {
      *      prev.totalStandardAmount = prev.totalStandardAmount + doc.standardAmount;
      *      prev.totalDealAmount = prev.totalDealAmount + doc.dealAmount ;
-     *  },
+     *  }, //aggregation function
      *  finalize: function(out) {
      *      return out;
      *  } })
@@ -69,4 +68,19 @@ public class ReportServiceImpl implements ReportService {
         return resultList;
 
     }
+
+    @Override
+    public List getDealPriceRate(String collectionName) {
+        Aggregation  aggregation = newAggregation(
+                match(where("year").gt("2015").and("dealAmount").gt(2000)),
+                group("shopNo","productNo").avg("dealAmount").as("dealAvg")
+                .avg("standardAmount").as("standardAvg"),
+                project("shopNo","productNo","dealAvg","standardAvg")
+
+        );
+
+        return baseDao.getAgreagrationCollection(collectionName,aggregation, Map.class);
+    }
+
+
 }

@@ -1,9 +1,15 @@
 package com.mongodb;
 
 
+import com.document.to.RetailTo;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.aggregation.Field;
+import org.springframework.data.mongodb.core.aggregation.Fields;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 
@@ -39,6 +45,13 @@ public class BaseDao<T>{
     }
 
     public DBCollection getCollection(String collectionName) {
-       return mongoTemplate.getCollection(collectionName);
+        return mongoTemplate.getCollection(collectionName);
     }
+
+    public <T> List<T> getAgreagrationCollection(String collectionName, Aggregation aggregation,Class<T> objectClass){
+        AggregationResults<T> results =  mongoTemplate.aggregate(aggregation,collectionName,objectClass);
+        return results.getMappedResults();
+    }
+
+
 }
